@@ -166,8 +166,12 @@ public class LevelManager : MonoBehaviour
         {
             for (var x = position.x - range; x <= position.x + range; x++)
             {
+                if (x < 0 || x >= width)
+                    continue;
                 for (var z = position.z - range; z <= position.z + range; z++)
                 {
+                    if (z < 0 || z >= length)
+                        continue;
                     var wasDestroyed = data.RecordDamage(currentTopLayer + -y, z * width + x, type); //need same thing as in TileIsVisible as now it destroys tile on another side TODO
                     if (wasDestroyed)
                         onTileDestroyed?.Invoke(new Vector3Int(x, y, z));

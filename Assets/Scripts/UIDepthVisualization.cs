@@ -9,6 +9,7 @@ public class UIDepthVisualization : MonoBehaviour
 {
     public Slider CameraSlider;
     public TextMeshProUGUI DepthLabel;
+    public TextMeshProUGUI SliderHandleText;
 
     private void OnEnable()
     {
@@ -17,9 +18,10 @@ public class UIDepthVisualization : MonoBehaviour
 
     public void OnMapDraw(int maxDepth, int currentTopLayer)
     {
-        CameraSlider.maxValue = maxDepth-1;
+        CameraSlider.maxValue = Mathf.Max(10, maxDepth-1);
         CameraSlider.value = currentTopLayer;
-        DepthLabel.text = $"{maxDepth.ToString()}";
+        SliderHandleText.text = $" {currentTopLayer}";
+        DepthLabel.text = $"{CameraSlider.maxValue}";
     }
 
 

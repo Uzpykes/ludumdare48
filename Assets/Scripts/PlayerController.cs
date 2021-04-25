@@ -167,6 +167,10 @@ public class PlayerController : MonoBehaviour
 
     private void DoMoveWrapper(Vector3Int amount, float speed = 1f)
     {
+        var target = gridPosition + amount;
+        if (target.x > maxPosition.x || target.x < minPosition.x || target.z > maxPosition.y || target.z < minPosition.y)
+            return;
+
         if (isMoving)
             return;
         isMoving = true;
