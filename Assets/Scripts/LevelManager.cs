@@ -17,6 +17,7 @@ public class LevelManager : MonoBehaviour
 
     public static UnityEvent<Vector3Int> onTileDestroyed = new UnityEvent<Vector3Int>();
     public static UnityEvent<int> onMapMoved = new UnityEvent<int>();
+    public static UnityEvent<int, int> onMapDraw = new UnityEvent<int, int>();
 
     private void OnEnable()
     {
@@ -27,7 +28,8 @@ public class LevelManager : MonoBehaviour
     {
         //InputManager.onTileClick.AddListener(OnTileClick);
         InputManager.onMouseScroll.AddListener(OnMouseScroll);
-        PlayerController.onTryToDestroy.AddListener(OnPlayerDamage);
+        PlayerController.onTryToDestroy.AddListener(OnDamage);
+        DinamiteBehaviour.onExplosion.AddListener(OnExplosionDamage);
         PlayerController.onFinishedFalling.AddListener(OnPlayerFinishedFalling);
     }
 
@@ -61,6 +63,8 @@ public class LevelManager : MonoBehaviour
                 go.transform.position = new Vector3(x, y, z);
             }
         }
+
+        onMapDraw?.Invoke(data.maxDepth, currentTopLayer);
     }
 
     //private void OnTileClick(GameObject go)
@@ -153,14 +157,13 @@ public class LevelManager : MonoBehaviour
     //    DrawLevel();
     //}
 
-    private void OnPlayerDamage(Vector3Int position, DamageType type)
+    private void OnDamage(Vector3Int position, DamageType type)
     {
         var range = 0;
         if (type == DamageType.Dinamite)
             range = 1;
         for (var y = (currentTopLayer + -(position.y + range)) < 0 ? 0 : (position.y + range); y >= position.y - range; y-- )
         {
-            Debug.Log(y);
             for (var x = position.x - range; x <= position.x + range; x++)
             {
                 for (var z = position.z - range; z <= position.z + range; z++)
@@ -175,9 +178,15 @@ public class LevelManager : MonoBehaviour
         DrawLevel();
     }
 
+    private void OnExplosionDamage(Vector3Int position)
+    {
+        OnDamage(position, DamageType.Dinamite);
+    }
+
     private void OnDisable()
     {
         onTileDestroyed?.RemoveAllListeners();
+        onMapDraw?.RemoveAllListeners();
     }
 }
 

@@ -5,11 +5,11 @@ using UnityEngine.Events;
 
 public class DinamitePreExplosionDone : StateMachineBehaviour
 {
-    public static UnityEvent onPreExplodeDone = new UnityEvent();
+    public static UnityEvent<DinamiteBehaviour> onPreExplodeDone = new UnityEvent<DinamiteBehaviour>();
 
     private void OnDisable()
     {
-        onPreExplodeDone?.RemoveAllListeners();
+        //onPreExplodeDone?.RemoveAllListeners();
     }
 
 
@@ -29,7 +29,7 @@ public class DinamitePreExplosionDone : StateMachineBehaviour
     override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         if (stateInfo.IsName("DinamitePreExplosion"))
-            onPreExplodeDone?.Invoke();
+            onPreExplodeDone?.Invoke(animator.gameObject.GetComponentInParent<DinamiteBehaviour>());
     }
 
     // OnStateMove is called right after Animator.OnAnimatorMove()

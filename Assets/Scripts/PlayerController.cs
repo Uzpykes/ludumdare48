@@ -6,6 +6,7 @@ using UnityEngine.Events;
 public class PlayerController : MonoBehaviour
 {
     public GameObject dinamitePrefab;
+    public Animator anim;
 
     private Vector2Int minPosition = Vector2Int.zero;
     private Vector2Int maxPosition = new Vector2Int(7, 7);
@@ -126,13 +127,14 @@ public class PlayerController : MonoBehaviour
         else if (Input.GetKeyDown(KeyCode.B))
         {
             if (below != null)
-                DoDinamiteWrapper();
+                SpawnDinamite();
         }
     }
 
-    private void DoDinamiteWrapper()
+    private void SpawnDinamite()
     {
         var dinamite = Instantiate(dinamitePrefab);
+        dinamite.GetComponent<DinamiteBehaviour>().explosionPosition = gridPosition;
         dinamite.transform.position = this.transform.position;
     }
 
@@ -147,10 +149,13 @@ public class PlayerController : MonoBehaviour
     private IEnumerator DoDestroy(Vector3Int position, DamageType type = DamageType.Pickaxe)
     {
         canMove = false;
-        //transform.LookAt(position + verticalOffset);
-        yield return new WaitForSeconds(0.05f);
+        if (position.y == 0)
+            transform.LookAt(transform.position + position);
+        anim.SetTrigger("PlayHit");
+        yield return new WaitForSeconds(0.1f);
         onTryToDestroy?.Invoke(gridPosition + position, type);
         yield return new WaitForSeconds(0.1f);
+        anim.StopPlayback();
         canMove = true;
         isDestroying = false;
     }
@@ -171,6 +176,11 @@ public class PlayerController : MonoBehaviour
     private IEnumerator DoMove(Vector3Int amount, float speed = 1f)
     {
         canMove = false;
+        if (amount.y == 0)
+        {
+            anim.SetTrigger("PlayMove");
+            transform.LookAt(transform.position + amount);
+        }
         var start = gridPosition + verticalOffset;
         var target = gridPosition + amount + verticalOffset;
         bool move = true;
@@ -192,6 +202,8 @@ public class PlayerController : MonoBehaviour
         isMoving = false;
         if (amount.y < 0)
             onFinishedFalling?.Invoke(gridPosition.y);
+        if (below == null)
+            FakeFall(); //Might recurse 
     }
 
     private void Start()

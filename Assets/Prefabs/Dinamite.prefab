@@ -45,6 +45,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   anim: {fileID: 4820153560132846763}
+  explosionEffect: {fileID: 4811109857325154084, guid: 7220d692d0141e24dbda49e06fd12a03, type: 3}
 --- !u!1 &4820153560132846761
 GameObject:
   m_ObjectHideFlags: 0

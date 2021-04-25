@@ -7,9 +7,13 @@ public enum TileType : byte
     Unchanged = 0,
     Sand = 1,
     Rock = 10,
+    DepletedRock = 11, //left after mining silver, gold or diamond. Cannot be destroyed with pick
     Dirt = 20,
     DirtMinusThrd = 21,
     DirtMinus2Thrds = 22,
+    Gold = 30,
+    Silver = 35,
+    Diamond = 40,
     Grass = 56, // special layer found on top
     Deleted = 99, //Tile that was deleted
     Invisible = 100, //tile cannot be interacted with
@@ -24,7 +28,6 @@ public class LevelData
     public int layerLength { get; private set; }
 
     public int globalSeed { get; private set; }
-
 
     //Needed layers are generated on the fly
     //Then modification data is overlayed on top
@@ -82,7 +85,9 @@ public class LevelData
                 if (!TileIsVisible(i, depth, layer))
                     layer[i] = TileType.Invisible;
                 else
+                {
                     layer[i] = tile;
+                }
             else
                 layer[i] = modificationLayer[i];
         }
@@ -114,31 +119,43 @@ public class LevelData
     {
         if (depth == 0)
             return TileType.Grass; //first layer should always be grass
-        var random = Random.Range(0, 100); //Perlin3D(x, y, depth) * 100;
-        if (depth > 0 && depth < 10)
-        {
-            if (random > 70)
-                return TileType.Rock;
-            if (random > 40)
-                return TileType.Dirt;
-            if (random > 0)
-                return TileType.Sand;
-        }
-        if (depth >= 10 && depth <= 30)
-        {
-            if (random > 60)
-                return TileType.Rock;
-            if (random > 30)
-                return TileType.Dirt;
-            if (random > 0)
-                return TileType.Sand;
-        }
+        var random = Random.Range(0f, 100f); //Perlin3D(x, y, depth) * 100;
 
-        return TileType.Rock;
+        float diamondThreshold = Mathf.Max(101f - (depth / 20f), 96f); //Chance is increased every 20 layers. Minimum 20 depth is required
+        float goldThreshold = Mathf.Max(100f - (depth / 20f), 95f); //Chance for gold
+        float silverThreshold = Mathf.Max(98f - (depth / 20f), 93f); //chance for silver
+        float rockThreshold = Mathf.Max(70 - (depth / 30f), 60f); //No bigger then 50% chance
+        float dirtThreshold = Mathf.Max(40 - (depth / 10f), 30f);
+        float sandThreshold = 2f;
+
+        if (random > diamondThreshold)
+            return TileType.Diamond;
+        if (random > goldThreshold)
+            return TileType.Gold;
+        if (random > silverThreshold)
+            return TileType.Silver;
+        if (random > rockThreshold)
+            return TileType.Rock;
+        if (random > dirtThreshold)
+            return TileType.Dirt;
+        if (random > sandThreshold)
+            return TileType.Sand;
+
+        return TileType.Rock; // Might be cool to have empty tile here
     }
 
-    private void RecordModification(int layerIndex, int tileIndex, TileType newType)
+    private void RecordModification(int layerIndex, int tileIndex, TileType newType, TileType previousType)
     {
+        if (previousType == TileType.Gold)
+            ResourceManager.ChangeCount(ResourceType.Gold, 1);
+        else if (previousType == TileType.Silver)
+            ResourceManager.ChangeCount(ResourceType.Silver, 1);
+        else if (previousType == TileType.Diamond)
+            ResourceManager.ChangeCount(ResourceType.Diamond, 1);
+        else if (previousType != TileType.Deleted && newType == TileType.Deleted)
+            ResourceManager.ChangeCount(ResourceType.Blocks, 1);
+
+
         layerModificationData[layerIndex][tileIndex] = newType;
         if (newType == TileType.Deleted)
         {
@@ -160,35 +177,51 @@ public class LevelData
             case TileType.Dirt:
                 if (type == DamageType.Dinamite)
                 {
-                    RecordModification(layerIndex, tileIndex, TileType.Deleted);
+                    RecordModification(layerIndex, tileIndex, TileType.Deleted, currentTile);
                     return true;
                 }
                 else
                 {
-                    RecordModification(layerIndex, tileIndex, TileType.DirtMinusThrd);
+                    RecordModification(layerIndex, tileIndex, TileType.DirtMinusThrd, currentTile);
                     return false;
                 }
             case TileType.DirtMinusThrd:
                 if (type == DamageType.Dinamite)
                 {
-                    RecordModification(layerIndex, tileIndex, TileType.Deleted);
+                    RecordModification(layerIndex, tileIndex, TileType.Deleted, currentTile);
                     return true;
                 }
                 else
                 {
-                    RecordModification(layerIndex, tileIndex, TileType.DirtMinus2Thrds);
+                    RecordModification(layerIndex, tileIndex, TileType.DirtMinus2Thrds, currentTile);
                     return false;
                 }
             case TileType.Rock:
+            case TileType.DepletedRock:
                 if (type == DamageType.Dinamite)
                 {
-                    RecordModification(layerIndex, tileIndex, TileType.Deleted);
+                    RecordModification(layerIndex, tileIndex, TileType.Deleted, currentTile);
                     return true;
                 }
                 else
                     return false;
+            case TileType.Diamond:
+            case TileType.Gold:
+            case TileType.Silver:
+                if (type == DamageType.Dinamite)
+                {
+                    RecordModification(layerIndex, tileIndex, TileType.Deleted, currentTile);
+                    return true;
+                }
+                else
+                {
+                    RecordModification(layerIndex, tileIndex, TileType.DepletedRock, currentTile);
+                    return false;
+                }
+            case TileType.Deleted: //probably not needed
+                return false;
             default:
-                RecordModification(layerIndex, tileIndex, TileType.Deleted);
+                RecordModification(layerIndex, tileIndex, TileType.Deleted, currentTile);
                 return true;
         }
     }
