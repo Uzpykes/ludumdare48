@@ -147,7 +147,7 @@ public class LevelData
         }
     }
 
-    public bool RecordDamage(int layerIndex, int tileIndex, bool isExplosion = false, int damageRange = 1)
+    public bool RecordDamage(int layerIndex, int tileIndex, DamageType type = DamageType.Pickaxe)
     {
         var tiles = GetVisible(0);
         var currentTile = layerModificationData[layerIndex][tileIndex];
@@ -158,13 +158,29 @@ public class LevelData
         switch(currentTile)
         {
             case TileType.Dirt:
-                RecordModification(layerIndex, tileIndex, TileType.DirtMinusThrd);
-                return false;
+                if (type == DamageType.Dinamite)
+                {
+                    RecordModification(layerIndex, tileIndex, TileType.Deleted);
+                    return true;
+                }
+                else
+                {
+                    RecordModification(layerIndex, tileIndex, TileType.DirtMinusThrd);
+                    return false;
+                }
             case TileType.DirtMinusThrd:
-                RecordModification(layerIndex, tileIndex, TileType.DirtMinus2Thrds);
-                return false;
+                if (type == DamageType.Dinamite)
+                {
+                    RecordModification(layerIndex, tileIndex, TileType.Deleted);
+                    return true;
+                }
+                else
+                {
+                    RecordModification(layerIndex, tileIndex, TileType.DirtMinus2Thrds);
+                    return false;
+                }
             case TileType.Rock:
-                if (isExplosion)
+                if (type == DamageType.Dinamite)
                 {
                     RecordModification(layerIndex, tileIndex, TileType.Deleted);
                     return true;

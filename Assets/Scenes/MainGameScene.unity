@@ -330,7 +330,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh-508010
+  m_Name: pb_Mesh-1282
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -587,7 +587,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh-507998
+  m_Name: pb_Mesh-1248
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -1004,6 +1004,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 950706630348478082, guid: f3e2faf1fab7f184a8a283dea5863182, type: 3}
+      propertyPath: dinamitePrefab
+      value: 
+      objectReference: {fileID: 4820153558736335917, guid: 7c2983a9724e0b1479167418955f85bf, type: 3}
     - target: {fileID: 950706630348478082, guid: f3e2faf1fab7f184a8a283dea5863182, type: 3}
       propertyPath: gridPosition.y
       value: 1

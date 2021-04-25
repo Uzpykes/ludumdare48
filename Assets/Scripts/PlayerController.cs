@@ -5,10 +5,12 @@ using UnityEngine.Events;
 
 public class PlayerController : MonoBehaviour
 {
+    public GameObject dinamitePrefab;
+
     private Vector2Int minPosition = Vector2Int.zero;
     private Vector2Int maxPosition = new Vector2Int(7, 7);
 
-    public static UnityEvent<Vector3Int> onTryToDestroy = new UnityEvent<Vector3Int>();
+    public static UnityEvent<Vector3Int, DamageType> onTryToDestroy = new UnityEvent<Vector3Int, DamageType>();
     public static UnityEvent<int> onFinishedFalling = new UnityEvent<int>();
 
     [SerializeField]
@@ -19,6 +21,8 @@ public class PlayerController : MonoBehaviour
     private Vector3 verticalOffset = Vector3.down * 0.5f;
 
     private KeyCode queuedKey = KeyCode.Escape;
+    private float queueLifetime = 0.35f;
+    private float timeQueued = 0f;
 
     private bool isDestroying = false;
     private bool isMoving = false;
@@ -30,17 +34,45 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
+        QueueMovement();
         if (canMove)
             Move();
         if (canMove)
             SyncTransformToGrid();
     }
 
+    private void QueueMovement()
+    {
+        if (Input.GetKeyDown(KeyCode.W))
+        {
+            queuedKey = KeyCode.W;
+            timeQueued = Time.time;
+        }
+        else if (Input.GetKeyDown(KeyCode.A))
+        {
+            queuedKey = KeyCode.A;
+            timeQueued = Time.time;
+        }
+        else if (Input.GetKeyDown(KeyCode.S))
+        {
+            queuedKey = KeyCode.S;
+            timeQueued = Time.time;
+        }
+        else if (Input.GetKeyDown(KeyCode.D))
+        {
+            queuedKey = KeyCode.D;
+            timeQueued = Time.time;
+        }
+
+        if (timeQueued - Time.time > queueLifetime)
+            queuedKey = KeyCode.Escape;
+
+    }
+
     private void Move()
     {
         if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow) || queuedKey == KeyCode.W)
         {
-            queuedKey = KeyCode.W;
             if (canMove)
             {
                 queuedKey = KeyCode.Escape;
@@ -52,7 +84,6 @@ public class PlayerController : MonoBehaviour
         }
         else if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow) || queuedKey == KeyCode.A)
         {
-            queuedKey = KeyCode.A;
             if (canMove)
             {
                 queuedKey = KeyCode.Escape;
@@ -64,7 +95,6 @@ public class PlayerController : MonoBehaviour
         }
         else if (Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow) || queuedKey == KeyCode.S)
         {
-            queuedKey = KeyCode.S;
             if (canMove)
             {
                 queuedKey = KeyCode.Escape;
@@ -76,7 +106,6 @@ public class PlayerController : MonoBehaviour
         }
         else if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow) || queuedKey == KeyCode.D)
         {
-            queuedKey = KeyCode.D;
             if (canMove)
             {
                 queuedKey = KeyCode.Escape;
@@ -94,6 +123,17 @@ public class PlayerController : MonoBehaviour
                     DoDestroyWrapper(Vector3Int.down);
             }
         }
+        else if (Input.GetKeyDown(KeyCode.B))
+        {
+            if (below != null)
+                DoDinamiteWrapper();
+        }
+    }
+
+    private void DoDinamiteWrapper()
+    {
+        var dinamite = Instantiate(dinamitePrefab);
+        dinamite.transform.position = this.transform.position;
     }
 
     private void DoDestroyWrapper(Vector3Int position)
@@ -104,12 +144,12 @@ public class PlayerController : MonoBehaviour
         StartCoroutine(DoDestroy(position));
     }
 
-    private IEnumerator DoDestroy(Vector3Int position)
+    private IEnumerator DoDestroy(Vector3Int position, DamageType type = DamageType.Pickaxe)
     {
         canMove = false;
         //transform.LookAt(position + verticalOffset);
         yield return new WaitForSeconds(0.05f);
-        onTryToDestroy?.Invoke(gridPosition + position);
+        onTryToDestroy?.Invoke(gridPosition + position, type);
         yield return new WaitForSeconds(0.1f);
         canMove = true;
         isDestroying = false;
@@ -162,7 +202,7 @@ public class PlayerController : MonoBehaviour
 
     private void OnTileRemoved(Vector3Int position)
     {
-        if (gridPosition.x == position.x && gridPosition.z == position.z)
+        if (gridPosition.x == position.x && gridPosition.z == position.z && gridPosition.y > position.y)
         {
             FakeFall();
         }

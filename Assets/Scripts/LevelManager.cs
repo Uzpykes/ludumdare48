@@ -153,12 +153,25 @@ public class LevelManager : MonoBehaviour
     //    DrawLevel();
     //}
 
-    private void OnPlayerDamage(Vector3Int position)
+    private void OnPlayerDamage(Vector3Int position, DamageType type)
     {
-        var targetPosition = position;
-        var wasDestroyed = data.RecordDamage(currentTopLayer + -position.y, Mathf.RoundToInt(targetPosition.z) * width + Mathf.RoundToInt(targetPosition.x)); //need same thing as in TileIsVisible as now it destroys tile on another side TODO
-        if (wasDestroyed)
-            onTileDestroyed?.Invoke(position);
+        var range = 0;
+        if (type == DamageType.Dinamite)
+            range = 1;
+        for (var y = (currentTopLayer + -(position.y + range)) < 0 ? 0 : (position.y + range); y >= position.y - range; y-- )
+        {
+            Debug.Log(y);
+            for (var x = position.x - range; x <= position.x + range; x++)
+            {
+                for (var z = position.z - range; z <= position.z + range; z++)
+                {
+                    var wasDestroyed = data.RecordDamage(currentTopLayer + -y, z * width + x, type); //need same thing as in TileIsVisible as now it destroys tile on another side TODO
+                    if (wasDestroyed)
+                        onTileDestroyed?.Invoke(new Vector3Int(x, y, z));
+                }
+            }
+        }
+
         DrawLevel();
     }
 
@@ -173,4 +186,10 @@ public struct TileMaterial
 {
     public TileType type;
     public Material material;
+}
+
+public enum DamageType : byte
+{
+    Pickaxe = 0,
+    Dinamite = 1
 }
