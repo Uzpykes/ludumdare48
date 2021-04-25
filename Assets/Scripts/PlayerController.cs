@@ -239,8 +239,7 @@ public class PlayerController : MonoBehaviour
 
     private void OnDestroy()
     {
-        onTryToDestroy?.RemoveAllListeners();
-        onFinishedFalling?.RemoveAllListeners();
+        LevelManager.onTileDestroyed.RemoveListener(OnTileRemoved);
     }
 
 

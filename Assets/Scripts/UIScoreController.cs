@@ -17,12 +17,14 @@ public class UIScoreController : MonoBehaviour
 
     private void OnEnable()
     {
-        ScoreManager.onScoreChanged.AddListener(OnScoreChanged);       
+        ScoreManager.onScoreChanged.AddListener(OnScoreChanged);
+        ScoreManager.onReset.AddListener(OnReset);
     }
 
     private void OnScoreChanged(int delta)
     {
-
+        if (delta == 0)
+            return;
         if (!popUpIsMoving)
         {
             popupVal = delta;
@@ -47,6 +49,12 @@ public class UIScoreController : MonoBehaviour
         }
         ScorePopup.gameObject.SetActive(false);
         popUpIsMoving = false;
+    }
+
+    private void OnReset()
+    {
+        Score.text = $"{ScoreManager.TotalScore}";
+        ScorePopup.gameObject.SetActive(false);
     }
 
     private void OnDestroy()

@@ -8,11 +8,13 @@ public class ScoreManager
     public static int TotalScore { get; private set; } = 0;
 
     public static UnityEvent<int> onScoreChanged = new UnityEvent<int>();
+    public static UnityEvent onReset = new UnityEvent();
 
 
-    public void Reset()
+    public static void Reset()
     {
         TotalScore = 0;
+        onReset.Invoke();
     }
 
     public static void TileDestroyed(TileType type, int tileDepth)

@@ -22,9 +22,22 @@ public class UIManager : MonoBehaviour
 
     public void OnPressPlay()
     {
+        ResourceManager.SetUp();
+        ScoreManager.Reset();
         SceneManager.LoadScene(1, LoadSceneMode.Single);
         MainMenuObject.SetActive(false);
         GameUIObject.SetActive(true);
+    }
+
+    public void OnPressRestart()
+    {
+        MainMenuObject.SetActive(false);
+        GameUIObject.SetActive(true);
+        GameOverObject.SetActive(false);
+
+        ResourceManager.SetUp();
+        ScoreManager.Reset();
+        SceneManager.LoadScene(1, LoadSceneMode.Single);
     }
 
 }

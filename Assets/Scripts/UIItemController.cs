@@ -22,6 +22,8 @@ public class UIItemController : MonoBehaviour
 
     private void OnResourceChanged(ItemDetails r)
     {
+        if (r.type == this.resource.type)
+            this.resource = r;
         countText.text = this.resource.count.ToString();
         if (!this.resource.isBuyable)
             buyButton.gameObject.SetActive(false);

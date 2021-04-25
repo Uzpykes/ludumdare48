@@ -189,8 +189,9 @@ public class LevelManager : MonoBehaviour
 
     private void OnDisable()
     {
-        onTileDestroyed?.RemoveAllListeners();
-        onMapDraw?.RemoveAllListeners();
+        InputManager.onMouseScroll.RemoveListener(OnMouseScroll);
+        PlayerController.onTryToDestroy.RemoveListener(OnDamage);
+        PlayerController.onFinishedFalling.RemoveListener(OnPlayerFinishedFalling);
     }
 }
 

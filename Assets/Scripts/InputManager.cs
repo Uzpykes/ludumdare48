@@ -5,10 +5,7 @@ using UnityEngine.Events;
 
 public class InputManager : MonoBehaviour
 {
-    public static UnityEvent<GameObject> onTileClick = new UnityEvent<GameObject>();
     public static UnityEvent<float> onMouseScroll = new UnityEvent<float>();
-
-    public static UnityEvent<KeyCode> onMovementKeyDown = new UnityEvent<KeyCode>();
 
     private GameObject hitObject;
 
@@ -25,7 +22,6 @@ public class InputManager : MonoBehaviour
             {
                 if (hitObject.layer == LayerMask.NameToLayer("Tile"))
                 {
-                    onTileClick?.Invoke(hitObject);
                     hitObject = null;
                 }
             }
@@ -44,9 +40,6 @@ public class InputManager : MonoBehaviour
 
     private void OnDestroy()
     {
-        onTileClick.RemoveAllListeners();
-        onMouseScroll.RemoveAllListeners();
-        onMovementKeyDown.RemoveAllListeners();
     }
 
     private RaycastHit hit;

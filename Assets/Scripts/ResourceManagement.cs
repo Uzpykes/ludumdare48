@@ -5,22 +5,26 @@ using UnityEngine.Events;
 
 public class ResourceManager
 {
-    public static ItemDetails explosives = new ItemDetails(ResourceType.Explosives, 1, true, PurchaseRequirement.explosivesRequirement);
-    public static ItemDetails diamond = new ItemDetails(ResourceType.Diamond, 0, false);
-    public static ItemDetails gold = new ItemDetails(ResourceType.Gold, 0, false);
-    public static ItemDetails silver = new ItemDetails(ResourceType.Silver, 0, false);
-    public static ItemDetails blocks = new ItemDetails(ResourceType.Blocks, 0, false);
+    public static ItemDetails explosives;
+    public static ItemDetails diamond;
+    public static ItemDetails gold;
+    public static ItemDetails silver;
+    public static ItemDetails blocks;
 
     public static UnityEvent<ItemDetails> onItemChange = new UnityEvent<ItemDetails>();
 
     public static void SetUp()
     {
-        onItemChange?.RemoveAllListeners();
-        explosives = new ItemDetails(ResourceType.Explosives, 1, true);
+        explosives = new ItemDetails(ResourceType.Explosives, 3, true, PurchaseRequirement.explosivesRequirement);
         diamond = new ItemDetails(ResourceType.Diamond, 0, false);
         gold = new ItemDetails(ResourceType.Gold, 0, false);
         silver = new ItemDetails(ResourceType.Silver, 0, false);
         blocks = new ItemDetails(ResourceType.Blocks, 0, false);
+        onItemChange?.Invoke(explosives);
+        onItemChange?.Invoke(diamond);
+        onItemChange?.Invoke(gold);
+        onItemChange?.Invoke(silver);
+        onItemChange?.Invoke(blocks);
     }
 
     public static ItemDetails GetResourceOfType(ResourceType type)
