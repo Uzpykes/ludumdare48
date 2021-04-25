@@ -133,6 +133,13 @@ public class PlayerController : MonoBehaviour
 
     private void SpawnDinamite()
     {
+        if (ResourceManager.explosives.count > 0)
+            ResourceManager.explosives.count--;
+        else
+            return;
+
+        ResourceManager.onItemChange?.Invoke(ResourceManager.explosives);
+
         var dinamite = Instantiate(dinamitePrefab);
         dinamite.GetComponent<DinamiteBehaviour>().explosionPosition = gridPosition;
         dinamite.transform.position = this.transform.position;

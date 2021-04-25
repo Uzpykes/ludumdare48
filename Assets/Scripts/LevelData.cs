@@ -153,8 +153,10 @@ public class LevelData
         else if (previousType == TileType.Diamond)
             ResourceManager.ChangeCount(ResourceType.Diamond, 1);
         else if (previousType != TileType.Deleted && newType == TileType.Deleted)
+        {
             ResourceManager.ChangeCount(ResourceType.Blocks, 1);
-
+            ScoreManager.TileDestroyed(previousType, layerIndex + 1);
+        }
 
         layerModificationData[layerIndex][tileIndex] = newType;
         if (newType == TileType.Deleted)
