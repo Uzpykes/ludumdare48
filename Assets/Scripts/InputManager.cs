@@ -6,12 +6,15 @@ using UnityEngine.Events;
 public class InputManager : MonoBehaviour
 {
     public static UnityEvent<GameObject> onTileClick = new UnityEvent<GameObject>();
+    public static UnityEvent<float> onMouseScroll = new UnityEvent<float>();
+
+    public static UnityEvent<KeyCode> onMovementKeyDown = new UnityEvent<KeyCode>();
 
     private GameObject hitObject;
 
     private void OnEnable()
     {
-        
+    
     }
 
     private void Update()
@@ -23,8 +26,14 @@ public class InputManager : MonoBehaviour
                 if (hitObject.layer == LayerMask.NameToLayer("Tile"))
                 {
                     onTileClick?.Invoke(hitObject);
+                    hitObject = null;
                 }
             }
+        }
+        var mouseScroll = Input.GetAxis("Mouse ScrollWheel");
+        if (Mathf.Abs(mouseScroll) > 0)
+        {
+            onMouseScroll?.Invoke(mouseScroll);
         }
     }
 
@@ -36,6 +45,8 @@ public class InputManager : MonoBehaviour
     private void OnDestroy()
     {
         onTileClick.RemoveAllListeners();
+        onMouseScroll.RemoveAllListeners();
+        onMovementKeyDown.RemoveAllListeners();
     }
 
     private RaycastHit hit;
