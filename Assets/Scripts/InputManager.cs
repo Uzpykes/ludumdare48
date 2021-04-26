@@ -5,6 +5,9 @@ using UnityEngine.Events;
 
 public class InputManager : MonoBehaviour
 {
+
+    public static bool InputIsBlocked = false;
+
     public static UnityEvent<float> onMouseScroll = new UnityEvent<float>();
 
     private GameObject hitObject;
@@ -16,6 +19,8 @@ public class InputManager : MonoBehaviour
 
     private void Update()
     {
+        if (InputIsBlocked)
+            return;
         if (hitObject != null)
         {
             if (Input.GetMouseButtonDown(0))

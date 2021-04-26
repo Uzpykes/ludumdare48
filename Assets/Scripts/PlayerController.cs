@@ -22,7 +22,7 @@ public class PlayerController : MonoBehaviour
     private Vector3 verticalOffset = Vector3.down * 0.5f;
 
     private KeyCode queuedKey = KeyCode.Escape;
-    private float queueLifetime = 0.35f;
+    private float queueLifetime = 0.30f;
     private float timeQueued = 0f;
 
     private bool isDestroying = false;
@@ -36,7 +36,7 @@ public class PlayerController : MonoBehaviour
     private void Update()
     {
         QueueMovement();
-        if (canMove)
+        if (!InputManager.InputIsBlocked && canMove)
             Move();
         if (canMove)
             SyncTransformToGrid();
@@ -160,6 +160,7 @@ public class PlayerController : MonoBehaviour
             transform.LookAt(transform.position + position);
         anim.SetTrigger("PlayHit");
         yield return new WaitForSeconds(0.1f);
+        AudioManager.Instance?.PlayRandomMine();
         onTryToDestroy?.Invoke(gridPosition + position, type);
         yield return new WaitForSeconds(0.1f);
         anim.StopPlayback();

@@ -10,6 +10,7 @@ public class UIScoreController : MonoBehaviour
     public TextMeshProUGUI ScorePopup;
     public Transform startPosition;
     public Transform endPosition;
+    public TextMeshProUGUI WinningScreenScore;
 
     bool popUpIsMoving = false;
     private int popupVal = 0;
@@ -34,6 +35,7 @@ public class UIScoreController : MonoBehaviour
             popupVal += delta;
         ScorePopup.text = $"{popupVal}";
         Score.text = ScoreManager.TotalScore.ToString();
+        WinningScreenScore.text = ScoreManager.TotalScore.ToString();
     }
 
     private IEnumerator DoPopup()

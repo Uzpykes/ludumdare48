@@ -9,7 +9,7 @@ public class LevelManager : MonoBehaviour
     public List<TileMaterial> materials;
 
     private LevelData data;
-    private int currentTopLayer;
+    public int currentTopLayer;
     private List<TileType[]> currentlyDrawnTiles;
 
     private int width = 8;
@@ -115,7 +115,7 @@ public class LevelManager : MonoBehaviour
         instancesUsed = 0;
     }
 
-    private void OnMouseScroll(float amount)
+    public void OnMouseScroll(float amount)
     {
         var prev = currentTopLayer;
         currentTopLayer += (int)Mathf.Sign(amount) * -1;

@@ -121,12 +121,12 @@ public class LevelData
             return TileType.Grass; //first layer should always be grass
         var random = Random.Range(0f, 100f); //Perlin3D(x, y, depth) * 100;
 
-        float diamondThreshold = Mathf.Max(101f - (depth / 20f), 96f); //Chance is increased every 20 layers. Minimum 20 depth is required
-        float goldThreshold = Mathf.Max(100f - (depth / 20f), 95f); //Chance for gold
-        float silverThreshold = Mathf.Max(98f - (depth / 20f), 93f); //chance for silver
+        float diamondThreshold = Mathf.Max(100f - (depth / 20f), 97f); //Chance is increased every 20 layers. Minimum 20 depth is required
+        float goldThreshold = Mathf.Max(99f - (depth / 15f), 93f); //Chance for gold
+        float silverThreshold = Mathf.Max(97f - (depth / 10f), 87f); //chance for silver
         float rockThreshold = Mathf.Max(70 - (depth / 30f), 60f); //No bigger then 50% chance
         float dirtThreshold = Mathf.Max(40 - (depth / 10f), 30f);
-        float sandThreshold = 2f;
+        float sandThreshold = 5f;
 
         if (random > diamondThreshold)
             return TileType.Diamond;

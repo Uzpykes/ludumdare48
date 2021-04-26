@@ -28,6 +28,7 @@ public class DinamiteBehaviour : MonoBehaviour
         DinamitePreExplosionDone.onPreExplodeDone.RemoveListener(OnDoExplosion);
         var explosion = Instantiate(explosionEffect, transform.position, Quaternion.identity);
         explosion.Play();
+        AudioManager.Instance?.PlayRandomExplosion();
         onExplosion?.Invoke(explosionPosition);
         Destroy(this.gameObject);
     }
