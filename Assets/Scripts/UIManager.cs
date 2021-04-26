@@ -80,6 +80,11 @@ public class UIManager : MonoBehaviour
         SceneManager.LoadScene(1, LoadSceneMode.Single);
     }
 
+    public void OnPressQuit()
+    {
+        Application.Quit();
+    }
+
     public void OnDebugWin()
     {
         ResourceManager.ChangeCount(ResourceType.Diamond, 5);
