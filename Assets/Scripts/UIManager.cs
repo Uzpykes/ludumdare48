@@ -54,7 +54,6 @@ public class UIManager : MonoBehaviour
 
         canvasGroup.interactable = true;
         canvasGroup.alpha = 1f;
-        InputManager.InputIsBlocked = false;
     }
 
     public void OnPressPlay()
@@ -65,6 +64,7 @@ public class UIManager : MonoBehaviour
         MainMenuObject.SetActive(false);
         GameUIObject.SetActive(true);
         diamondsToWin = 5;
+        InputManager.InputIsBlocked = false;
     }
 
     public void OnPressRestart()
@@ -78,11 +78,22 @@ public class UIManager : MonoBehaviour
         ResourceManager.SetUp();
         ScoreManager.Reset();
         SceneManager.LoadScene(1, LoadSceneMode.Single);
+        InputManager.InputIsBlocked = false;
     }
 
     public void OnPressQuit()
     {
         Application.Quit();
+    }
+
+    public void OnReturnToMainMenu()
+    {
+        ResourceManager.SetUp();
+        ScoreManager.Reset();
+        MainMenuObject.SetActive(true);
+        GameUIObject.SetActive(false);
+        GameOverObject.SetActive(false);
+        diamondsToWin = 5;
     }
 
     public void OnDebugWin()
